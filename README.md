@@ -8,6 +8,14 @@ PhD vacancies are scattered across university portals and aggregators, with inco
 
 > **Demo status:** the application currently runs locally. A public deployment is the next release milestone; the API requires a server runtime and cannot be hosted directly by GitHub Pages alone.
 
+## Current interface
+
+These screenshots were captured from the running local application with live-ingested records from the configured sources.
+
+| Opportunity dashboard | Normalized opportunity details |
+| --- | --- |
+| ![Dashboard showing active PhD opportunities, source filters, intake filters, and summary statistics](output/playwright/dashboard-overview.png) | ![Opportunity detail page showing normalized funding, deadline, supervisor, documents, and application links](output/playwright/opportunity-detail-overview.png) |
+
 ## What it does
 
 - Ingests live vacancies from Inria, AcademicTransfer, EURAXESS, jobs.ac.uk, and FindAPhD.
