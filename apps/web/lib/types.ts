@@ -12,6 +12,12 @@ export type Opportunity = {
   source_url: string;
   official_url: string | null;
   verification_status: string;
+  link_verification_status:
+    | "not_checked"
+    | "source_verified"
+    | "official_verified"
+    | "broken";
+  last_verified_at: string | null;
   status: string;
   title: string;
   project_title: string | null;

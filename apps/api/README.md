@@ -1,14 +1,39 @@
-# API App
+# PhD Opportunity Tracker API
 
-This backend is now scaffolded around:
+Python backend for live source ingestion, normalization, link hygiene, topic classification, persistence, and applicant tracking.
 
-- FastAPI
-- SQLAlchemy
-- local SQLite by default for quick iteration
-- source registry and parser adapters
-- opportunity + applied tracking routes
+## Capabilities
 
-## Current Capabilities
+- FastAPI and typed Pydantic responses
+- SQLAlchemy with local SQLite persistence
+- live adapters for Inria, AcademicTransfer, EURAXESS, jobs.ac.uk, and FindAPhD
+- HTTP-first fetching with challenge-aware Scrapling fallback
+- shared extraction and rule-based NLP services
+- URL validation and explicit source/link trust metadata
+- idempotent compatibility migrations for existing SQLite databases
+- partial-failure isolation during multi-source ingestion
+
+## Run
+
+From `apps/api`:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -e . pytest
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
+
+Open `http://127.0.0.1:8000/docs` for the interactive API.
+
+## Test
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest tests
+```
+
+The tests cover all five source adapters plus fetching fallback, extraction helpers, NLP classification, and database migration behavior.
+
+## Routes
 
 - `GET /health`
 - `GET /ingest/sources`
@@ -18,32 +43,12 @@ This backend is now scaffolded around:
 - `GET /opportunities/{id}`
 - `PATCH /opportunities/{id}/apply`
 
-## Local Run
+## Configuration
 
-From this folder:
+Copy `.env.example` to `.env` if you need to override defaults. The application supports:
 
-```bash
-uv sync
-uv run python run.py
-```
+- `PHD_TRACKER_DATABASE_URL`
+- `PHD_TRACKER_DEFAULT_USER_KEY`
+- `PHD_TRACKER_ENABLE_DEMO_SEED`
 
-Then open:
-
-- `http://127.0.0.1:8000/docs`
-
-## Current Source Status
-
-Registered source adapters:
-
-- `inria`
-- `jobs_ac_uk`
-- `findaphd`
-
-They are registered and URL-ready, but live parsing is not enabled yet. The current scaffold includes a demo seed endpoint so we can build the web UI before the live scrapers are finished.
-
-## Next Backend Work
-
-- implement first real HTML fetch + parse flow
-- add normalization for documents / deadlines / funding
-- add source verification pipeline
-- connect to Supabase when we want hosted persistence
+Local databases and environment files are intentionally excluded from Git.

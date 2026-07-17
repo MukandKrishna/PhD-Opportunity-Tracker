@@ -7,6 +7,8 @@ create table if not exists phd_opportunities (
     source_url text not null,
     official_url text,
     verification_status text not null default 'aggregator_unverified',
+    link_verification_status text not null default 'not_checked',
+    last_verified_at timestamptz,
     status text not null default 'active',
 
     title text not null,

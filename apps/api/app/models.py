@@ -8,6 +8,7 @@ from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, String, Text, Unique
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db import Base
+from app.verification import LinkVerificationStatus
 
 
 class Opportunity(Base):
@@ -22,6 +23,14 @@ class Opportunity(Base):
     source_url: Mapped[str] = mapped_column(Text)
     official_url: Mapped[str | None] = mapped_column(Text, nullable=True)
     verification_status: Mapped[str] = mapped_column(String(50), default="aggregator_unverified")
+    link_verification_status: Mapped[str] = mapped_column(
+        String(30),
+        default=LinkVerificationStatus.NOT_CHECKED.value,
+    )
+    last_verified_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
     status: Mapped[str] = mapped_column(String(30), default="active", index=True)
 
     title: Mapped[str] = mapped_column(Text)

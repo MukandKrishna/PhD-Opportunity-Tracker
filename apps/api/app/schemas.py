@@ -6,6 +6,8 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.verification import LinkVerificationStatus
+
 
 class TrackingState(BaseModel):
     user_key: str
@@ -23,6 +25,8 @@ class OpportunityBase(BaseModel):
     source_url: str
     official_url: str | None = None
     verification_status: str
+    link_verification_status: LinkVerificationStatus
+    last_verified_at: datetime | None = None
     status: str
     title: str
     project_title: str | None = None

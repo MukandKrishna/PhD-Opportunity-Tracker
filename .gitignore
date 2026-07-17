@@ -1,13 +1,25 @@
 .env
+.env.*
+!.env.example
 .venv/
 __pycache__/
 *.pyc
+.pytest_cache/
+*.db
+*.sqlite
+*.sqlite3
 .DS_Store
 node_modules/
+apps/web/node_modules/
 .next/
+out/
+*.tsbuildinfo
 dist/
 coverage/
 tmp/
-
+.agents/
 /apps/api/.venv
 /apps/api/.venv_run
+MAIN_README.md
+for_mlh_fellowship.md
+# End of project-specific ignores.

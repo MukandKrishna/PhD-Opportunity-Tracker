@@ -1,8 +1,23 @@
 # PhD Opportunity Tracker Progress
 
-Last updated: 2026-06-14
+Last updated: 2026-07-17
 
 This file records what has been built, what was fixed, what was verified, current issues, and what remains.
+
+## MLH Code Sample Readiness Update
+
+The repository has been prepared for a focused MLH Fellowship review:
+
+- root documentation now describes the implemented system rather than the initial plan
+- an interview-friendly Python code-review path is documented
+- GitHub Actions verifies backend tests and frontend types
+- link verification now has explicit `link_verification_status` and `last_verified_at` fields
+- existing SQLite databases receive the new fields through an idempotent compatibility migration
+- migration regression coverage brings the backend suite to 27 passing tests
+- generated databases, environments, caches, and build metadata are excluded from Git
+- `for_mlh_fellowship.md` contains draft application answers, evidence mapping, deployment guidance, and a remaining checklist
+
+Public deployment and changing repository visibility to public remain separate, pending steps.
 
 ## Current Status
 
