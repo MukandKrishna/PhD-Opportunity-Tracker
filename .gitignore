@@ -21,5 +21,6 @@ tmp/
 /apps/api/.venv
 /apps/api/.venv_run
 MAIN_README.md
+PROGRESS.md
 for_mlh_fellowship.md
 # End of project-specific ignores.
