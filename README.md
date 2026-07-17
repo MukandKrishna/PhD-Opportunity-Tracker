@@ -6,14 +6,12 @@ A full-stack application that discovers, normalizes, verifies, and tracks active
 
 PhD vacancies are scattered across university portals and aggregators, with inconsistent fields and frequently stale links. This project turns five different sources into one searchable data model while preserving the distinction between an official application page and an aggregator listing.
 
-> **Demo status:** the application currently runs locally. A public deployment is the next release milestone; the API requires a server runtime and cannot be hosted directly by GitHub Pages alone.
-
 ## Current interface
 
 These screenshots were captured from the running local application with live-ingested records from the configured sources.
 
-| Opportunity dashboard | Normalized opportunity details |
-| --- | --- |
+| Opportunity dashboard                                                                                                                           | Normalized opportunity details                                                                                                                                   |
+| ----------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | ![Dashboard showing active PhD opportunities, source filters, intake filters, and summary statistics](output/playwright/dashboard-overview.png) | ![Opportunity detail page showing normalized funding, deadline, supervisor, documents, and application links](output/playwright/opportunity-detail-overview.png) |
 
 ## What it does
@@ -50,8 +48,6 @@ Each source adapter implements the same `OpportunitySource` contract. The ingest
 | Frontend        | TypeScript, Next.js 15, React                      |
 | Persistence     | SQLite locally; portable SQL schema included       |
 | Quality         | pytest, TypeScript strict checking, GitHub Actions |
-
-For the MLH code-sample form, the primary contribution should be listed as **Python (SWE, SRE, Web3)** because the main engineering depth is in the ingestion, parsing, normalization, validation, persistence, and API layers. TypeScript is the secondary language.
 
 ## Run locally
 
@@ -147,7 +143,6 @@ For a focused review of the Python contribution, start with:
 - [Roadmap](docs/roadmap.md)
 - [Source-priority rationale](docs/source-priority.md)
 - [Detailed implementation progress](PROGRESS.md)
-- [MLH Fellowship preparation](for_mlh_fellowship.md)
 
 ## Roadmap
 
