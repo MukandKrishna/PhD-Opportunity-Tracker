@@ -4,13 +4,13 @@ from __future__ import annotations
 
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import func, select
+from sqlalchemy import func, select, text
 from sqlalchemy.orm import Session
 
 from app.config import get_settings
-from app.db import SessionLocal, init_db
+from app.db import SessionLocal, get_db, init_db
 from app.models import Opportunity
 from app.routes.ingest import router as ingest_router
 from app.routes.opportunities import router as opportunities_router
@@ -40,11 +40,8 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://127.0.0.1:3000",
-        "http://localhost:3000",
-    ],
-    allow_credentials=True,
+    allow_origins=list(get_settings().cors_origins),
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -54,9 +51,6 @@ app.include_router(ingest_router)
 
 
 @app.get("/health")
-def healthcheck() -> dict[str, str]:
-    settings = get_settings()
-    return {
-        "status": "ok",
-        "database_url": settings.database_url,
-    }
+def healthcheck(db: Session = Depends(get_db)) -> dict[str, str]:
+    db.execute(text("SELECT 1"))
+    return {"status": "ok"}

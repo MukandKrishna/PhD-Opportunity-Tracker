@@ -50,5 +50,19 @@ Copy `.env.example` to `.env` if you need to override defaults. The application 
 - `PHD_TRACKER_DATABASE_URL`
 - `PHD_TRACKER_DEFAULT_USER_KEY`
 - `PHD_TRACKER_ENABLE_DEMO_SEED`
+- `PHD_TRACKER_CORS_ORIGINS` (comma-separated browser origins)
+- `PHD_TRACKER_INGEST_API_KEY` (sent as `X-Ingest-API-Key`)
+
+Render-style `postgresql://` URLs are automatically normalized to SQLAlchemy's
+`postgresql+psycopg://` dialect. On Render, ingestion endpoints fail closed if
+`PHD_TRACKER_INGEST_API_KEY` is missing. Read and health endpoints remain public.
+
+For a GitHub Pages frontend, configure:
+
+```text
+PHD_TRACKER_CORS_ORIGINS=https://mukandkrishna.github.io
+```
+
+The origin must not include the repository path or a trailing slash.
 
 Local databases and environment files are intentionally excluded from Git.

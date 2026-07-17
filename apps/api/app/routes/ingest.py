@@ -5,6 +5,7 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+from app.auth import require_ingest_api_key
 from app.config import get_settings
 from app.db import get_db
 from app.schemas import IngestRequest, IngestResult, SourceDescriptor
@@ -20,7 +21,11 @@ def list_sources() -> list[SourceDescriptor]:
     return [SourceDescriptor(**source.descriptor.__dict__) for source in registry.values()]
 
 
-@router.post("/run", response_model=IngestResult)
+@router.post(
+    "/run",
+    response_model=IngestResult,
+    dependencies=[Depends(require_ingest_api_key)],
+)
 def run_ingest(request: IngestRequest, db: Session = Depends(get_db)) -> IngestResult:
     return run_registered_sources(
         db,
@@ -31,12 +36,20 @@ def run_ingest(request: IngestRequest, db: Session = Depends(get_db)) -> IngestR
     )
 
 
-@router.post("/seed-demo", response_model=IngestResult)
+@router.post(
+    "/seed-demo",
+    response_model=IngestResult,
+    dependencies=[Depends(require_ingest_api_key)],
+)
 def seed_demo(db: Session = Depends(get_db)) -> IngestResult:
     return seed_demo_data(db)
 
 
-@router.post("/bootstrap-demo", response_model=IngestResult)
+@router.post(
+    "/bootstrap-demo",
+    response_model=IngestResult,
+    dependencies=[Depends(require_ingest_api_key)],
+)
 def bootstrap_demo_if_enabled(db: Session = Depends(get_db)) -> IngestResult:
     settings = get_settings()
     if not settings.enable_demo_seed:
