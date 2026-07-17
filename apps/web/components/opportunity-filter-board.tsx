@@ -16,6 +16,7 @@ type Intake = {
 type OpportunityFilterBoardProps = {
   opportunities: Opportunity[];
   sources: SourceDescriptor[];
+  onOpportunityUpdated?: (opportunity: Opportunity) => void;
 };
 
 const TARGET_YEARS = ["2026", "2027"] as const;
@@ -85,7 +86,11 @@ function countMatching(items: Opportunity[], predicate: (item: Opportunity) => b
   return items.filter(predicate).length;
 }
 
-export function OpportunityFilterBoard({ opportunities, sources }: OpportunityFilterBoardProps) {
+export function OpportunityFilterBoard({
+  opportunities,
+  sources,
+  onOpportunityUpdated,
+}: OpportunityFilterBoardProps) {
   const [selectedYear, setSelectedYear] = useState<string | null>(null);
   const [selectedIntakeId, setSelectedIntakeId] = useState<string | null>(null);
   const [selectedSource, setSelectedSource] = useState<string | null>(null);
@@ -206,7 +211,11 @@ export function OpportunityFilterBoard({ opportunities, sources }: OpportunityFi
       <div className="grid">
         {filtered.length > 0 ? (
           filtered.map((opportunity) => (
-            <OpportunityCard key={opportunity.id} opportunity={opportunity} />
+            <OpportunityCard
+              key={opportunity.id}
+              opportunity={opportunity}
+              onOpportunityUpdated={onOpportunityUpdated}
+            />
           ))
         ) : (
           <div className="panel empty-state">

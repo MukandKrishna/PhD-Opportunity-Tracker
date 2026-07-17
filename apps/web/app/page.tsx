@@ -1,12 +1,43 @@
+"use client";
+
+import { useCallback, useEffect, useState } from "react";
+
 import { OpportunityFilterBoard } from "@/components/opportunity-filter-board";
 import { getOpportunities, getSources } from "@/lib/api";
 import { isVerifiedStatus } from "@/lib/links";
+import type { Opportunity, SourceDescriptor } from "@/lib/types";
 
-export default async function HomePage() {
-  const [opportunities, sources] = await Promise.all([
-    getOpportunities({ applied: undefined }),
-    getSources(),
-  ]);
+export default function HomePage() {
+  const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
+  const [sources, setSources] = useState<SourceDescriptor[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadDashboard = useCallback(async () => {
+    try {
+      setError(null);
+      const [nextOpportunities, nextSources] = await Promise.all([
+        getOpportunities({ applied: undefined }),
+        getSources(),
+      ]);
+      setOpportunities(nextOpportunities);
+      setSources(nextSources);
+    } catch {
+      setError("The live API is unavailable. A free backend may need a minute to wake up.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadDashboard();
+  }, [loadDashboard]);
+
+  const handleOpportunityUpdated = (updated: Opportunity) => {
+    setOpportunities((current) =>
+      current.map((item) => (item.id === updated.id ? updated : item)),
+    );
+  };
 
   const appliedCount = opportunities.filter((item) => item.tracking?.is_applied).length;
   const verifiedCount = opportunities.filter((item) =>
@@ -72,7 +103,19 @@ export default async function HomePage() {
           </div>
         </div>
 
-        <OpportunityFilterBoard opportunities={opportunities} sources={sources} />
+        {loading ? (
+          <div className="panel empty-state">Loading live opportunities...</div>
+        ) : error ? (
+          <div className="panel empty-state">
+            {error} <button onClick={() => void loadDashboard()}>Try again</button>
+          </div>
+        ) : (
+          <OpportunityFilterBoard
+            opportunities={opportunities}
+            sources={sources}
+            onOpportunityUpdated={handleOpportunityUpdated}
+          />
+        )}
       </section>
     </main>
   );

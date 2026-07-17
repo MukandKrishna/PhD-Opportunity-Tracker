@@ -2,7 +2,22 @@ import { Opportunity, SourceDescriptor } from "@/lib/types";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8000";
-const DEFAULT_USER_KEY = "local-user";
+const USER_KEY_STORAGE = "phd-tracker-user-key";
+
+function getUserKey(): string {
+  if (typeof window === "undefined") {
+    return "public-demo";
+  }
+
+  const existing = window.localStorage.getItem(USER_KEY_STORAGE);
+  if (existing) {
+    return existing;
+  }
+
+  const generated = `browser-${crypto.randomUUID()}`;
+  window.localStorage.setItem(USER_KEY_STORAGE, generated);
+  return generated;
+}
 
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${path}`, {
@@ -26,7 +41,7 @@ export async function getOpportunities(params?: {
   status?: string;
 }): Promise<Opportunity[]> {
   const query = new URLSearchParams({
-    user_key: DEFAULT_USER_KEY,
+    user_key: getUserKey(),
     status: params?.status ?? "active",
   });
 
@@ -39,7 +54,7 @@ export async function getOpportunities(params?: {
 
 export async function getOpportunity(id: number): Promise<Opportunity> {
   return apiFetch<Opportunity>(
-    `/opportunities/${id}?user_key=${encodeURIComponent(DEFAULT_USER_KEY)}`,
+    `/opportunities/${id}?user_key=${encodeURIComponent(getUserKey())}`,
   );
 }
 
@@ -54,7 +69,7 @@ export async function setAppliedState(
   return apiFetch<Opportunity>(`/opportunities/${id}/apply`, {
     method: "PATCH",
     body: JSON.stringify({
-      user_key: DEFAULT_USER_KEY,
+      user_key: getUserKey(),
       is_applied: isApplied,
       documents_ready: [],
       notes: null,

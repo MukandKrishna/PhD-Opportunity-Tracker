@@ -7,9 +7,13 @@ import type { Opportunity } from "@/lib/types";
 
 type OpportunityCardProps = {
   opportunity: Opportunity;
+  onOpportunityUpdated?: (opportunity: Opportunity) => void;
 };
 
-export function OpportunityCard({ opportunity }: OpportunityCardProps) {
+export function OpportunityCard({
+  opportunity,
+  onOpportunityUpdated,
+}: OpportunityCardProps) {
   const closingSoon = isClosingSoon(opportunity.deadline_text);
   const isApplied = Boolean(opportunity.tracking?.is_applied);
   const externalLink = getBestOpportunityUrl(opportunity);
@@ -60,10 +64,17 @@ export function OpportunityCard({ opportunity }: OpportunityCardProps) {
             {externalLink.label}
           </a>
         ) : null}
-        <Link className="button-link button-secondary" href={`/opportunity/${opportunity.id}`}>
+        <Link
+          className="button-link button-secondary"
+          href={{ pathname: "/opportunity", query: { id: opportunity.id } }}
+        >
           Open details
         </Link>
-        <ApplyToggle opportunityId={opportunity.id} isApplied={isApplied} />
+        <ApplyToggle
+          opportunityId={opportunity.id}
+          isApplied={isApplied}
+          onOpportunityUpdated={onOpportunityUpdated}
+        />
       </div>
     </article>
   );

@@ -1,10 +1,39 @@
+"use client";
+
 import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
 
 import { OpportunityCard } from "@/components/opportunity-card";
 import { getOpportunities } from "@/lib/api";
+import type { Opportunity } from "@/lib/types";
 
-export default async function AppliedPage() {
-  const opportunities = await getOpportunities({ applied: true });
+export default function AppliedPage() {
+  const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadApplied = useCallback(async () => {
+    try {
+      setError(null);
+      setOpportunities(await getOpportunities({ applied: true }));
+    } catch {
+      setError("The live API is unavailable. A free backend may need a minute to wake up.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadApplied();
+  }, [loadApplied]);
+
+  const handleOpportunityUpdated = (updated: Opportunity) => {
+    setOpportunities((current) =>
+      updated.tracking?.is_applied
+        ? current.map((item) => (item.id === updated.id ? updated : item))
+        : current.filter((item) => item.id !== updated.id),
+    );
+  };
 
   return (
     <main className="shell" style={{ paddingBottom: 40 }}>
@@ -41,9 +70,17 @@ export default async function AppliedPage() {
         </div>
 
         <div className="grid">
-          {opportunities.length > 0 ? (
+          {loading ? (
+            <div className="panel empty-state">Loading applied opportunities...</div>
+          ) : error ? (
+            <div className="panel empty-state">{error}</div>
+          ) : opportunities.length > 0 ? (
             opportunities.map((opportunity) => (
-              <OpportunityCard key={opportunity.id} opportunity={opportunity} />
+              <OpportunityCard
+                key={opportunity.id}
+                opportunity={opportunity}
+                onOpportunityUpdated={handleOpportunityUpdated}
+              />
             ))
           ) : (
             <div className="panel empty-state">

@@ -1,20 +1,21 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 
 import { setAppliedState } from "@/lib/api";
+import type { Opportunity } from "@/lib/types";
 
 type ApplyToggleProps = {
   opportunityId: number;
   isApplied: boolean;
+  onOpportunityUpdated?: (opportunity: Opportunity) => void;
 };
 
 export function ApplyToggle({
   opportunityId,
   isApplied,
+  onOpportunityUpdated,
 }: ApplyToggleProps) {
-  const router = useRouter();
   const [applied, setApplied] = useState(isApplied);
   const [isPending, startTransition] = useTransition();
 
@@ -22,9 +23,9 @@ export function ApplyToggle({
     const nextValue = !applied;
     startTransition(async () => {
       try {
-        await setAppliedState(opportunityId, nextValue);
-        setApplied(nextValue);
-        router.refresh();
+        const updated = await setAppliedState(opportunityId, nextValue);
+        setApplied(Boolean(updated.tracking?.is_applied));
+        onOpportunityUpdated?.(updated);
       } catch (error) {
         console.error(error);
       }

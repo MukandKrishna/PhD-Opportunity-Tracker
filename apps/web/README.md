@@ -10,7 +10,7 @@ This frontend is now scaffolded with:
 
 - `/` all active opportunities
 - `/applied` applied opportunities
-- `/opportunity/[id]` detail page
+- `/opportunity?id={id}` static-compatible detail page
 
 ## Current Features
 
@@ -41,3 +41,16 @@ or with your preferred package manager:
 pnpm install
 pnpm dev
 ```
+
+## GitHub Pages
+
+The production frontend is a static export. GitHub Actions builds it with:
+
+```text
+GITHUB_PAGES=true
+NEXT_PUBLIC_API_BASE_URL=https://phd-opportunity-tracker.onrender.com
+```
+
+The exported site is written to `out/` and deployed by
+`.github/workflows/deploy-pages.yml`. The browser talks to the hosted FastAPI
+service; database credentials are never included in the frontend.

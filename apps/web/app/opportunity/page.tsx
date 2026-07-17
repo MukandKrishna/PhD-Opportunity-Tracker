@@ -1,34 +1,51 @@
+"use client";
+
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import { ApplyToggle } from "@/components/apply-toggle";
 import { getOpportunity } from "@/lib/api";
 import { isClosingSoon } from "@/lib/format";
 import { getBestOpportunityUrl, isDisplayableExternalUrl, isVerifiedStatus } from "@/lib/links";
-
-type OpportunityDetailPageProps = {
-  params: Promise<{ id: string }>;
-};
+import type { Opportunity } from "@/lib/types";
 
 function renderValue(value: string | null | undefined, fallback = "Not extracted yet") {
   return value && value.trim() ? value : fallback;
 }
 
-export default async function OpportunityDetailPage({
-  params,
-}: OpportunityDetailPageProps) {
-  const { id } = await params;
-  const numericId = Number(id);
+export default function OpportunityDetailPage() {
+  const [opportunity, setOpportunity] = useState<Opportunity | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  if (Number.isNaN(numericId)) {
-    notFound();
+  useEffect(() => {
+    const id = Number(new URLSearchParams(window.location.search).get("id"));
+    if (!Number.isInteger(id) || id <= 0) {
+      setError("This opportunity link is invalid.");
+      setLoading(false);
+      return;
+    }
+
+    getOpportunity(id)
+      .then(setOpportunity)
+      .catch(() => {
+        setError("This opportunity could not be loaded from the live API.");
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return <main className="shell"><div className="panel empty-state">Loading opportunity...</div></main>;
   }
 
-  let opportunity;
-  try {
-    opportunity = await getOpportunity(numericId);
-  } catch {
-    notFound();
+  if (error || opportunity === null) {
+    return (
+      <main className="shell">
+        <div className="panel empty-state">
+          {error ?? "Opportunity not found."} <Link href="/">Back to all opportunities</Link>
+        </div>
+      </main>
+    );
   }
 
   const isApplied = Boolean(opportunity.tracking?.is_applied);
@@ -148,7 +165,11 @@ export default async function OpportunityDetailPage({
                 {externalLink.label}
               </a>
             ) : null}
-            <ApplyToggle opportunityId={opportunity.id} isApplied={isApplied} />
+            <ApplyToggle
+              opportunityId={opportunity.id}
+              isApplied={isApplied}
+              onOpportunityUpdated={setOpportunity}
+            />
             <Link className="button-link button-secondary" href="/">
               Back to all
             </Link>
